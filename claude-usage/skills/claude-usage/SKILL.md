@@ -190,11 +190,12 @@ for r in rows:
 def cost(email, day):
     return float((by_user.get(email, {}).get(day) or {}).get("total_cost") or 0)
 
-# 팀 전체를 통틀어 하루 최고치 — 모든 스파크라인이 이 눈금을 쓴다.
-PEAK = max((cost(r.get("user_email"), d) for r in rows for d in days), default=0)
-
 for team, members in by_team.items():
     members.sort(key=lambda r: -(r.get("five_hour_pct") or 0))
+    # 🔴 눈금은 «그 팀» 안에서만 잡는다. 여러 팀에 속했을 때 전 팀을 통틀어 잡으면,
+    #    큰 팀에 하루 $500 쓴 사람이 하나 있는 것만으로 다른 팀 스파크라인이 전부
+    #    납작해진다 — 각자 자기 최고치로 그리던 때와 똑같이 틀린 인상을 준다.
+    PEAK = max((cost(r.get("user_email"), d) for r in members for d in days), default=0)
     print(f"[{team}]  {len(members)}명")
     print()
     for r in members:
@@ -226,7 +227,7 @@ for team, members in by_team.items():
     #    맞춰 읽게 만든다. 그건 틀린 안내다. 범위만 밝힌다.
     a, b = days[0], days[-1]
     print(f"  ▁▂▃▄▅▆▇█ = {int(a[5:7])}/{int(a[8:])} → {int(b[5:7])}/{int(b[8:])} 일별 비용"
-          f" · 오른쪽이 오늘 · █ = ${PEAK:,.0f} (팀 공통 눈금이라 사람끼리 비교됨)")
+          f" · 오른쪽이 오늘 · █ = ${PEAK:,.0f} (이 팀 안에서 공통 눈금이라 사람끼리 비교됨)")
 PY
 ```
 
