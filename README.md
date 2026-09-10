@@ -3,9 +3,14 @@
 터미널을 떠나지 않고 Claude 사용 한도를 확인하고, 메뉴바 앱을 설치·진단합니다.
 
 ```
-/plugin marketplace add hmyanghm/claude-usage-plugin
+/plugin marketplace add https://github.com/hmyanghm/claude-usage-plugin.git
 /plugin install claude-usage
 ```
+
+> 🔴 주소를 통째로 씁니다. `hmyanghm/claude-usage-plugin` 처럼 짧게 쓰면 Claude Code 가
+> `git@github.com:` 으로 붙어서, GitHub SSH 키가 없거나 `~/.ssh/config` 에 별칭으로
+> 설정한 사람은 `Permission denied (publickey)` 로 실패합니다. HTTPS 주소는 공개
+> 저장소라 누구나 받아집니다.
 
 ## 쓰는 법
 
