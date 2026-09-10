@@ -1,0 +1,9 @@
+{
+  "name": "claude-usage",
+  "version": "1.0.0",
+  "description": "Claude Code 사용 한도를 터미널에서 바로 확인하고, 메뉴바 앱을 설치·진단합니다. /claude-usage 로 지금 상태, /claude-usage install 로 설치.",
+  "author": { "name": "hmyanghm" },
+  "homepage": "https://usage.diddk.kr",
+  "license": "SEE LICENSE IN https://usage.diddk.kr/LICENSE.txt",
+  "keywords": ["usage", "rate-limit", "quota", "menubar", "monitor"]
+}

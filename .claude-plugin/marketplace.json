@@ -1,0 +1,13 @@
+{
+  "name": "claude-usage",
+  "owner": { "name": "hmyanghm" },
+  "plugins": [
+    {
+      "name": "claude-usage",
+      "source": "./claude-usage",
+      "description": "Claude Code 사용 한도를 터미널에서 바로 확인하고, 메뉴바 앱을 설치·진단합니다. 5시간·주간·모델별 한도, 리셋까지 남은 시간, 이 속도면 언제 막히는지.",
+      "category": "productivity",
+      "homepage": "https://usage.diddk.kr"
+    }
+  ]
+}
