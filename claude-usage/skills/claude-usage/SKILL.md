@@ -5,13 +5,22 @@ description: Claude Code 사용 한도를 터미널에서 확인하거나 메뉴
 
 # Claude 사용 한도
 
-`$ARGUMENTS` 가 비어 있으면 **지금 상태**를 보여준다. `team`·`install`·`status`·`update` 면 아래 해당 절로 간다.
+`$ARGUMENTS` 가 비어 있으면 **지금 상태**를 보여준다.
+`team`·`install`·`status`·`update`·`help` 면 아래 해당 절로 간다.
+
+🔴 **처음 쓰는 사람에게는 결과 끝에 한 줄을 붙인다** — 이 도구에 뭐가 더 있는지
+   모르면 다시 안 쓴다. 이번 대화에서 이미 안내했으면 반복하지 않는다:
+   `팀원 한도는 /claude-usage team · 메뉴바 앱은 /claude-usage install`
 
 ---
 
 ## 지금 상태 (인자 없음)
 
 Claude Code 가 쓰는 것과 같은 OAuth 토큰으로 한도를 읽는다. 앱이 설치돼 있지 않아도 된다.
+
+🔴 **macOS 전용이다.** 인증을 keychain 에서 읽는다. Windows·Linux 에서는
+   "이 명령은 macOS 에서만 됩니다. Windows 는 트레이 앱을 쓰세요" 라고 답하고
+   `install` 절을 안내한다 — 스크립트를 억지로 돌리지 말 것.
 
 ```bash
 python3 - <<'PY'
@@ -57,6 +66,8 @@ PY
 - 그 외 → ✅ 지금 돌려도 된다. 병목 한도의 여유와 리셋 시각을 곁들인다.
 
 `←지금 병목` 이 붙은 것이 실제로 발목을 잡는 한도다. 그것을 기준으로 말한다.
+
+판정 뒤에 위의 한 줄 안내를 붙인다(이번 대화에서 처음일 때만).
 
 🔴 **모델 전용 한도(예: Fable)를 빠뜨리지 말 것.** 주간 전체가 남아 있어도 그것이
 100% 면 그 모델을 못 쓴다. 별개의 벽이다.
@@ -165,11 +176,15 @@ curl -fsSL https://usage.diddk.kr/install.sh | sh
 ```
 
 설치되는 것: `~/Applications/Claude Usage Monitor.app`(서명·공증됨)과
-`~/.claude-menubar/`. 로그인 시 자동 실행을 원하면:
+`~/.claude-menubar/`.
 
-```bash
-launchctl load ~/Library/LaunchAgents/com.claude.usage-monitor.plist
-```
+🔴 **이 한 줄이 전부다. 뒤에 붙일 명령은 없다.** 설치가 끝나면 앱이 뜨고 로그인 시
+   자동 실행도 켜져 있다. 예전 안내에 있던 `launchctl load …` 를 덧붙이면 앱이
+   **두 개** 뜬다(설치 스크립트가 하나, launchd 가 하나) — 메뉴바 아이콘이 둘,
+   API 폴링도 두 배라 레이트리밋에 두 배로 빨리 걸린다. 3.2.1 부터 앱이 스스로
+   막지만, 애초에 안내하지 말 것.
+
+   끄려면: 시스템 설정 › 일반 › 로그인 항목에서 **Claude Usage Monitor** 를 내린다.
 
 **Windows** 는 트레이 앱이다. 두 파일을 같은 폴더에 받아 `setup_windows.bat` 를 실행한다
 (Python 3.8+ 필요):
@@ -209,6 +224,33 @@ curl -fsSL https://usage.diddk.kr/install.sh | sh
 
 같은 스크립트가 갱신도 한다. 런처는 버전이 바뀔 때만 다시 받고, 앱 코드만 교체된다.
 메뉴바 팝오버 아래 **버전 숫자를 눌러도** 그 자리에서 확인·설치할 수 있다.
+
+---
+
+## help — 무엇을 할 수 있나
+
+아래를 **그대로 보여준다.** 실행할 것은 없다.
+
+```
+/claude-usage           지금 내 한도 — 5시간·주간·모델 전용(Fable 등)과 한 줄 판정
+/claude-usage team      같은 팀 사람들의 한도 — 누가 여유 있는지
+/claude-usage install   메뉴바 앱·트레이 앱·크롬 확장 설치
+/claude-usage status    설치·버전·전송 상태 진단
+/claude-usage update    앱을 최신으로
+```
+
+말로 물어도 된다:
+- "한도 얼마나 남았어"
+- "지금 큰 작업 돌려도 돼?"
+- "누가 여유 있어?"  (팀)
+- "사용량 모니터 설치해줘"
+
+**알아 둘 것**
+- 앱을 깔지 않아도 `/claude-usage` 는 된다. Claude Code 가 이미 가진 인증으로
+  한도만 읽는다 — 서버가 없고, 대화·프롬프트는 읽지 않는다.
+- `team` 만 메뉴바 앱의 팀 로그인이 필요하다. 앱이 키체인에 둔 세션을 빌려 쓴다.
+- 메뉴바 앱(macOS)·트레이 앱(Windows)·크롬 확장은 각각 따로다. 아무것도
+  안 깔아도 이 플러그인은 동작한다.
 
 ---
 
