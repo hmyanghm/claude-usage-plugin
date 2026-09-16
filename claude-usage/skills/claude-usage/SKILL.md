@@ -18,21 +18,38 @@ description: Claude Code 사용 한도를 터미널에서 확인하거나 메뉴
 
 Claude Code 가 쓰는 것과 같은 OAuth 토큰으로 한도를 읽는다. 앱이 설치돼 있지 않아도 된다.
 
-🔴 **macOS 전용이다.** 인증을 keychain 에서 읽는다. Windows·Linux 에서는
-   "이 명령은 macOS 에서만 됩니다. Windows 는 트레이 앱을 쓰세요" 라고 답하고
-   `install` 절을 안내한다 — 스크립트를 억지로 돌리지 말 것.
+🔴 **세 OS 다 된다.** Claude Code 가 토큰을 두는 곳이 OS마다 다를 뿐이다 —
+   macOS 는 키체인, Windows·Linux 는 `~/.claude/.credentials.json`. 아래 스크립트가
+   알아서 고른다. **"macOS 전용" 이라며 미리 거절하지 말 것.** 못 찾으면 스크립트가
+   그렇게 말한다. (Windows 에서 자격 증명 관리자에만 토큰이 있는 드문 경우는 아직
+   못 읽는다 — 그때는 트레이 앱을 안내한다.)
 
 ```bash
 python3 - <<'PY'
-import json, subprocess, urllib.request, datetime as dt
+import json, subprocess, sys, urllib.request, datetime as dt, pathlib
 
-raw = subprocess.run(["security", "find-generic-password", "-w",
-                      "-s", "Claude Code-credentials"],
-                     capture_output=True, text=True).stdout.strip()
-if not raw:
+def load_creds():
+    # macOS 는 키체인이 정본이라 먼저 본다. Windows·Linux 에는 security 가 없고
+    # Claude Code 가 ~/.claude/.credentials.json 에 평문으로 둔다.
+    if sys.platform == "darwin":
+        try:
+            raw = subprocess.run(["security", "find-generic-password", "-w",
+                                  "-s", "Claude Code-credentials"],
+                                 capture_output=True, text=True).stdout.strip()
+            if raw:
+                return json.loads(raw)
+        except (OSError, ValueError):
+            pass
+    try:
+        return json.loads((pathlib.Path.home() / ".claude" / ".credentials.json")
+                          .read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+tok = ((load_creds() or {}).get("claudeAiOauth") or {}).get("accessToken")
+if not tok:
     print("Claude Code 로그인 정보를 찾지 못했습니다. 터미널에서 `claude` 로 로그인돼 있어야 합니다.")
     raise SystemExit
-tok = json.loads(raw)["claudeAiOauth"]["accessToken"]
 req = urllib.request.Request(
     "https://api.anthropic.com/api/oauth/usage?at_wall=1",  # at_wall=1 이라야 juniper_tide 가 온다
     headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json",

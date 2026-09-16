@@ -50,9 +50,11 @@
 어디로도 보내지 않습니다 — 이 플러그인에는 서버가 없습니다. 토큰 값은 화면에
 찍지 않습니다.
 
-**Windows 에서도 되나요?**
-`/claude-usage` 는 macOS 에서만 됩니다(인증을 keychain 에서 읽습니다).
-Windows 는 트레이 앱을 쓰세요 — `/claude-usage install` 이 안내합니다.
+**Windows·Linux 에서도 되나요?**
+`/claude-usage` 는 세 OS 다 됩니다. Claude Code 의 인증을 macOS 는 keychain,
+Windows·Linux 는 `~/.claude/.credentials.json` 에서 읽습니다.
+`/claude-usage team` 만 macOS 메뉴바 앱의 팀 로그인이 필요합니다 — Windows 는
+트레이 앱에서 보세요(`/claude-usage install`).
 
 ## 왜 있나
 
