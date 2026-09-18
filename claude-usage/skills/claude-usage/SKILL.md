@@ -202,12 +202,18 @@ for h in hist:
 
 by_team = {}
 for r in rows:
-    by_team.setdefault(r.get("team_name") or "팀", []).append(r)
+    # 🔴 이름이 아니라 team_id 로 묶는다. 팀 이름은 전역 유일이 아니다(다른 회사의
+    #    «개발팀» 이 여럿). 서버는 내가 속한 팀만 주고 그 안에서는 이름이 안 겹치게
+    #    막지만(migrate_12), 묶는 키는 처음부터 id 가 맞다.
+    tid = r.get("team_id")
+    key = tid if tid is not None else (r.get("team_name") or "팀")
+    by_team.setdefault(key, {"name": r.get("team_name") or "팀", "rows": []})["rows"].append(r)
 
 def cost(email, day):
     return float((by_user.get(email, {}).get(day) or {}).get("total_cost") or 0)
 
-for team, members in by_team.items():
+for grp in by_team.values():
+    team, members = grp["name"], grp["rows"]
     members.sort(key=lambda r: -(r.get("five_hour_pct") or 0))
     # 🔴 눈금은 «그 팀» 안에서만 잡는다. 여러 팀에 속했을 때 전 팀을 통틀어 잡으면,
     #    큰 팀에 하루 $500 쓴 사람이 하나 있는 것만으로 다른 팀 스파크라인이 전부
